@@ -5,7 +5,7 @@
 ```
 (TITLE)(LEVEL)<DORK [DOMAIN]>
 ```
-**NOTE: if you want to reference a target in the idiot, you need to put [DOMAIN]**
+**NOTE: if you want to reference a target in the dork, you need to put [DOMAIN]**
 
 Save the dork in the dorks file you will use.
 
