@@ -146,7 +146,7 @@ def checkResults(results, title, level):
     if not search_results:
         print(f"-- no results for {title} --")
     else:
-        final_string = "-- %i results --\n\n" % len(search_results)
+        final_string = f"-- {str(len(search_results))} results for {title} --\n\n"
         for result in search_results:
             final_string += f'[degoogle:{title}] [google] [{level}] '+result['url']+'\n'
             if final_string[-2:] == '\n\n':
