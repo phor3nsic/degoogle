@@ -17,7 +17,7 @@ Example:
 # How to
 
 ```
-git clone https://github.com/six2dez/degoogle_hunter
-cd degoogle_hunter 
+git clone https://github.com/phor3nsic/degoogle.git
+cd degoogle 
 python3 degoogle.py -fd dorks.txt -d target.com
 ```
