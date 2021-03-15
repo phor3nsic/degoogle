@@ -1,11 +1,8 @@
-#!/usr/bin/env python3
-
 import argparse
 import re
+import requests
 import sys
 import urllib.parse
-
-import requests
 
 # todo ####################
 # > better junk exclusion
@@ -42,8 +39,8 @@ class dg():
 
         normalized_query = re.sub(r' |%20', '+', self.query)
         normalized_query = re.sub(r'"|\"', '%22', normalized_query)
-        url = f"https://google.com/search?start={pg}&tbs=qdr:{self.time_window}&q={normalized_query}&filter=0"
-
+        url = "https://google.com/search?start=%i&tbs=qdr:%s&q=%s&filter=0" % (pg, self.time_window, normalized_query)
+        
         return requests.get(url)
 
 
@@ -124,29 +121,68 @@ class dg():
             print(e)
             return
 
-def parse_args():
-    """Parse command line interface arguments."""
-    parser = argparse.ArgumentParser(
-        description="Search and extract google results.", prog="degoogle"
-    )
-    parser.add_argument('query', type=str, help='search query')
+# Dorks Update 
+def dorksFile(file):
+    arq = open(file).readlines()
+    return arq
+
+def getTitle(text):
+    r = '\\((.*?)\\)'
+    title = re.findall(r, text)
+    return title[0]
+
+def getLevel(text):
+    r = '\\((.*?)\\)'
+    level = re.findall(r, text)
+    return level[1]
+
+def getDork(text):
+    r = '\\<(.*?)\\>'
+    dork = re.findall(r, text)
+    return dork[0]
+
+def checkResults(results, title, level):
+    search_results = results
+    if not search_results:
+        print(f"-- no results for {title} --")
+    else:
+        final_string = "-- %i results --\n\n" % len(search_results)
+        for result in search_results:
+            final_string += f'[degoogle:{title}] [google] [{level}] '+result['url']+'\n'
+            if final_string[-2:] == '\n\n':
+                final_string = final_string[:-2]
+        print(final_string)
+
+def dorksCheck(dorksFile, domain, pgs, offset, time_window, exclude_junk):
+    for x in dorksFile:
+        x = x.replace("[DOMAIN]", domain)
+        dg1 = dg(getDork(x), pgs, offset, time_window, exclude_junk)
+        search_results = dg1.run()
+        checkResults(search_results, getTitle(x), getLevel(x))
+    
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-q','--query', type=str, help='search query')
     parser.add_argument('-o', '--offset', dest='offset', type=int, default=0, help='page offset to start from')
     parser.add_argument('-p', '--pages', dest='pages', type=int, default=1, help='specify multiple pages')
     parser.add_argument('-t', '--time-window', dest='time_window', type=str, default='a', help='time window')
     parser.add_argument('-j', '--exclude-junk', dest='exclude_junk', action='store_false', help='exclude junk (yt, fb, quora)')
-    return parser.parse_args()
+    parser.add_argument('-fd', '--filedorks', help='file contains dorks')
+    parser.add_argument('-d', '--domain', help='Domain to replace for dorks')
+    args = parser.parse_args()
 
-def main():
-    args = parse_args()
+    if args.filedorks:
+        dorksCheck(dorksFile(args.filedorks), args.domain, args.pages, args.offset, args.time_window, args.exclude_junk)
+        sys.exit()
 
 ################################################################################################
 # example/demo output... erase me! VVV
 
     # usage: make a dg object to run queries through #
-
+    
     # object using command line args
     dg1 = dg(args.query, args.pages, args.offset, args.time_window, args.exclude_junk)
-
+    
     # object with query set in constructor. note all other params have default values.. you can overwrite them or leave them alone
     dg2 = dg("dg2.query test")
 
@@ -166,6 +202,3 @@ def main():
             final_string = final_string[:-2]
         print(final_string)
 ################################################################################################
-
-if __name__ == '__main__':
-    main()

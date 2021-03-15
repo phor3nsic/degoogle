@@ -1,93 +1,37 @@
-# degoogle
-search Google and extract result urls directly. skip all the click-through links and other sketchiness
+# Simple fork from [degoogle](https://github.com/deepseagirl/degoogle) with bug hunting purposes
 
-contributions welcome
+Added degoogle_hunter.sh with an associative array with some dorks and descriptions, and runs degoogle (:
 
----
-install with pip:
-`pip install degoogle`
+You can add your own dorks following the same scheme included, just remember to place `$target` or `$1` in the right place ($target is $1 without tld, generated automatically)
 
-or
-```
-git clone
-cd degoogle
-pip install .
-```
+```dorks["description"]="dork"```
 
----
-| command line usage | script usage |
-|-|-|
-| `degoogle "query here"` | make a `dg` object, execute queries with `run()`|
+# How to
 
 ```
-usage: degoogle [-h] [-o OFFSET] [-p PAGES] [-t TIME_WINDOW] [-j] query
-
-Search and extract google results.
-
-positional arguments:
-  query                 search query
-
-optional arguments:
-  -h, --help            show this help message and exit
-  -o OFFSET, --offset OFFSET
-                        page offset to start from
-  -p PAGES, --pages PAGES
-                        specify multiple pages
-  -t TIME_WINDOW, --time-window TIME_WINDOW
-                        time window
-  -j, --exclude-junk    exclude junk (yt, fb, quora)
-
+git clone https://github.com/six2dez/degoogle_hunter
+cd degoogle_hunter 
+./degoogle_hunter.sh target.com
 ```
 
-*note that `time window` follows a syntax used by google's `tbs` parameter with the `qdr` option (read someone explain how it works [here](https://support.google.com/websearch/thread/7860817?hl=en&msgid=7865083))*
 
-#### examples:
-1. find `.txt` files on `.edu` sites within the past `3 months`:
-
-`degoogle "site:edu filetype:txt" -t m3`
-
-![image](https://user-images.githubusercontent.com/47490856/86186391-f69e7880-bb06-11ea-8006-b21a54819beb.png)
-
-2. with one `dg` instance, update `query` in a loop to perform multiple searches:
+First release contains these dorks, to serve as an example:
 
 ```
-from degoogle import dg
-degoogler = dg()
-queries = ["site:edu", "site:gov", "filetype:txt"]
-for query in queries:
-	print(query)
-	degoogler.query = query
-	results = degoogler.run()
-	for result in results:
-		print(result)
-	print()
+dorks["# 3rd part exposure"]="site:http://ideone.com | site:http://codebeautify.org | site:http://codeshare.io | site:http://codepen.io | site:http://repl.it | site:http://justpaste.it | site:http://pastebin.com | site:http://jsfiddle.net | site:http://trello.com | site:*.atlassian.net | site:bitbucket.org \"$target\""
+dorks["# Juicy files"]="site:$1 intitle:index.of | ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:ini | ext:sql | ext:dbf | ext:mdb | inurl:wp- | inurl:wp-content | inurl:plugins | inurl:uploads | inurl:themes | inurl:download | ext:log | inurl:login | intext:\"sql syntax near\" | intext:\"syntax error has occurred\" | intext:\"incorrect syntax near\" | intext:\"unexpected end of SQL command\" | intext:\"Warning: mysql_connect()\" | intext:\"Warning: mysql_query()\" | intext:\"Warning: pg_connect()\" | ext:php intitle:phpinfo \"published by the PHP Group\" | inurl:shell | inurl:backdoor | inurl:wso | inurl:cmd | shadow | passwd | boot.ini | inurl:backdoor | inurl:readme | inurl:license | inurl:install | inurl:setup | inurl:config | inurl:\"/phpinfo.php\" | inurl:\".htaccess\" | inurl:\"/.git\" tesla.com -github | ext:swf"
+dorks["# Exposed documents"]="site:$1 ext:doc | ext:docx | ext:odt | ext:pdf | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv"
+dorks["# Open redirects"]="site:$1 inurl:redir | inurl:url | inurl:redirect | inurl:return | inurl:src=http | inurl:r=http"
+dorks["# Apache Struts RCE"]="site:$1 ext:action | ext:struts | ext:do"
+dorks["# Search in pastebin"]="site:pastebin.com $1"
+dorks["# Linkedin employees"]="site:linkedin.com employees $1"
+dorks["# Wordpress files"]="site:$1 inurl:wp-content | inurl:wp-includes"
+dorks["# Subdomains"]="site:*.$1"
+dorks["# Sub-subdomains"]="site:*.*.$1"
 ```
 
-![image](https://user-images.githubusercontent.com/47490856/86186801-ffdc1500-bb07-11ea-8c64-b539ed4a0579.png)
+![](https://github.com/six2dez/degoogle_hunter/blob/master/2020-12-13%2001_56_29-Clipboard.png)
 
-3. one liner: make `dg` instance (query set in constructor), search across 5months, format + print results, end:
+You can support this work buying me a coffee:
 
-`[print(result['desc'],": ",result['url'],"\n") for result in (dg("intext:'begin rsa' site:*.edu.*",time_window="m5").run())]`
-
-![image](https://user-images.githubusercontent.com/47490856/86186862-30bc4a00-bb08-11ea-9a40-d8b3f96fe387.png)
-
----
-
-
-this is an experiment meant to have benefits for both user privacy and broadened osint capabilities
-
-idea: when you search google normally, your results will appear to be direct links to the target site, but what you're really getting is more like this:
-
-> `https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=3ahUWEwjVn87AHIEHeyMAsIQFjAZegQIWARN&url=https%3A%2F%2Fexample.com%2F&usg=BOvWas1Dcw1x9iNBCBHvWL8rWGgJO4`
-
-by using a link like this to access `example.com`, you are providing more information about yourself than necessary. they don't need to know what is done with the results after they are served; their job is done, the click-through is merely a suggestion.
-
-`example.com` can identify that google was your referer; the page you're clicking through from includes your search query as part of the URL, so they probably know what you searched for too. whether or not they're looking at it is another question
-
-if you navigate to `example.com` directly, without a referer like google, `example.com` knows that you have visited, but not where you came from, and google knows even less - even if you originally found out about `example.com` by spotting it in a google search at some point.
-
-google will obviously always know that the search took place, and which results were served, but I prefer to access results directly and not give anyone that click-through confirmation.
-
-there are also utility benefits here for dorking - you might find a super juicy link on page 10 with a bunch of strange parameters cached, but when you follow google's click-through you're redirected to an index page or 404 without even having a chance to copy the link from the result to research more.
-
-there are times where visually inspecting a URL is just as valuable as accessing the link. this tool ganks the good stuff, URL decodes and normalizes, and returns just the scraped URL + description
+[<img src="https://cdn.buymeacoffee.com/buttons/v2/default-green.png">](https://www.buymeacoffee.com/six2dez)
