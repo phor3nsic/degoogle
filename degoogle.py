@@ -141,7 +141,7 @@ def getDork(text):
     dork = re.findall(r, text)
     return dork[0]
 
-def checkResults(results, title, level):
+def checkResults(results, title, level, save, filesave):
     search_results = results
     if not search_results:
         print(f"-- no results for {title} --")
@@ -151,14 +151,21 @@ def checkResults(results, title, level):
             final_string += f'[degoogle:{title}] [google] [{level}] '+result['url']+'\n'
             if final_string[-2:] == '\n\n':
                 final_string = final_string[:-2]
+        if save:
+            outputSave(final_string, filesave)
         print(final_string)
 
-def dorksCheck(dorksFile, domain, pgs, offset, time_window, exclude_junk):
+def dorksCheck(dorksFile, domain, pgs, offset, time_window, exclude_junk, save, filesave):
     for x in dorksFile:
         x = x.replace("[DOMAIN]", domain)
         dg1 = dg(getDork(x), pgs, offset, time_window, exclude_junk)
         search_results = dg1.run()
-        checkResults(search_results, getTitle(x), getLevel(x))
+        checkResults(search_results, getTitle(x), getLevel(x), save, filesave)
+
+def outputSave(text, file):
+    arq = open(file, 'a+')
+    arq.write(text+'\n')
+    arq.close()
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -169,10 +176,15 @@ if __name__ == '__main__':
     parser.add_argument('-j', '--exclude-junk', dest='exclude_junk', action='store_false', help='exclude junk (yt, fb, quora)')
     parser.add_argument('-fd', '--filedorks', help='file contains dorks')
     parser.add_argument('-d', '--domain', help='Domain to replace for dorks')
+    parser.add_argument('-out', '--output', help='Output file')
     args = parser.parse_args()
 
+    SAVE = False
+    if args.output:
+        SAVE = True
+
     if args.filedorks:
-        dorksCheck(dorksFile(args.filedorks), args.domain, args.pages, args.offset, args.time_window, args.exclude_junk)
+        dorksCheck(dorksFile(args.filedorks), args.domain, args.pages, args.offset, args.time_window, args.exclude_junk, SAVE, args.output)
         sys.exit()
 
 ################################################################################################
