@@ -1,0 +1,24 @@
+{"name": "other_3rd_parties_sites", "severity": "info", "query": "site:gitter.im | site:papaly.com | site:productforums.google.com | site:coggle.it | site:replt.it | site:ycombinator.com | site:libraries.io | site:npm.runkit.com | site:npmjs.com | site:scribd.com \"[DOMAIN]\""}
+{"name": "code_share_sites", "severity": "low", "query": "site:sharecode.io | site:controlc.com | site:codepad.co |site:ideone.com | site:codebeautify.org | site:jsdelivr.com | site:codeshare.io | site:codepen.io | site:repl.it | site:jsfiddle.net \"[DOMAIN]\""}
+{"name": "gitLab_gitHub_gitbucket", "severity": "info", "query": "site:github.com | site:gitlab.com | site:bitbucket.org \"[DOMAIN]\""}
+{"name": "stackoverflow", "severity": "info", "query": "site:stackoverflow.com \"[DOMAIN]\""}
+{"name": "project_management_sites", "severity": "info", "query": "site:trello.com | site:*.atlassian.net \"[DOMAIN]\""}
+{"name": "pastebin-like_sites", "severity": "info", "query": "site:justpaste.it | site:heypasteit.com | site:pastebin.com \"[DOMAIN]\""}
+{"name": "config_files", "severity": "low", "query": "site:[DOMAIN] ext:xml | ext:conf | ext:cnf | ext:reg | ext:inf | ext:rdp | ext:cfg | ext:txt | ext:ora | ext:env | ext:ini"}
+{"name": "database_files", "severity": "low", "query": "site:[DOMAIN] ext:sql | ext:dbf | ext:mdb"}
+{"name": "backup_files", "severity": "low", "query": "site:[DOMAIN] ext:bkf | ext:bkp | ext:bak | ext:old | ext:backup"}
+{"name": "git_folder", "severity": "low", "query": "inurl:\"/.git\" [DOMAIN] -github"}
+{"name": "documents_exposed", "severity": "info", "query": "site:[DOMAIN] ext:doc | ext:docx | ext:odt | ext:pdf | ext:rtf | ext:sxw | ext:psw | ext:ppt | ext:pptx | ext:pps | ext:csv"}
+{"name": "others_files", "severity": "info", "query": "site:[DOMAIN] intitle:index.of | ext:log | ext:php intitle:phpinfo \"published by the PHP Group\" | inurl:shell | inurl:backdoor | inurl:wso | inurl:cmd | shadow | passwd | boot.ini | inurl:backdoor | inurl:readme | inurl:license | inurl:install | inurl:setup | inurl:config | inurl:\"/phpinfo.php\" | inurl:\".htaccess\" | ext:swf"}
+{"name": "sql_erros", "severity": "info", "query": "site:[DOMAIN] intext:\"sql syntax near\" | intext:\"syntax error has occurred\" | intext:\"incorrect syntax near\" | intext:\"unexpected end of SQL command\" | intext:\"Warning: mysql_connect()\" | intext:\"Warning: mysql_query()\" | intext:\"Warning: pg_connect()\""}
+{"name": "php_erros", "severity": "info", "query": "site:[DOMAIN] \"PHP Parse error\" | \"PHP Warning\" | \"PHP Error\""}
+{"name": "login_pages", "severity": "info", "query": "site:[DOMAIN] inurl:signup | inurl:register | intitle:Signup"}
+{"name": "open_redirects", "severity": "low", "query": "site:[DOMAIN] inurl:redir | inurl:url | inurl:redirect | inurl:return | inurl:src=http | inurl:r=http"}
+{"name": "apache_struts_rce", "severity": "high", "query": "site:[DOMAIN] ext:action | ext:struts | ext:do"}
+{"name": "linkedin_employees", "severity": "info", "query": "site:linkedin.com employees [DOMAIN]"}
+{"name": "wordpress", "severity": "info", "query": "site:[DOMAIN] inurl:wp-content | inurl:wp-includes"}
+{"name": "subdomains", "severity": "info", "query": "site:*.[DOMAIN]"}
+{"name": "sub-sub-domains", "severity": "info", "query": "site:*.*.[DOMAIN]"}
+{"name": "cloud_buckets_S3/GCP", "severity": "info", "query": "site:.s3.amazonaws.com | site:storage.googleapis.com | site:amazonaws.com \"[DOMAIN]\""}
+{"name": "traefik", "severity": "info", "query": "intitle:traefik inurl:8080/dashboard \"[DOMAIN]\""}
+{"name": "jenkins", "severity": "info", "query": "intitle:\"Dashboard [Jenkins]\" \"[DOMAIN]\""}

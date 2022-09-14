@@ -3,6 +3,7 @@ import re
 import requests
 import sys
 import urllib.parse
+import json
 
 # todo ####################
 # > better junk exclusion
@@ -126,21 +127,6 @@ def dorksFile(file):
     arq = open(file).readlines()
     return arq
 
-def getTitle(text):
-    r = '\\((.*?)\\)'
-    title = re.findall(r, text)
-    return title[0]
-
-def getLevel(text):
-    r = '\\((.*?)\\)'
-    level = re.findall(r, text)
-    return level[1]
-
-def getDork(text):
-    r = '\\<(.*?)\\>'
-    dork = re.findall(r, text)
-    return dork[0]
-
 def checkResults(results, title, level, save, filesave):
     search_results = results
     if not search_results:
@@ -157,10 +143,12 @@ def checkResults(results, title, level, save, filesave):
 
 def dorksCheck(dorksFile, domain, pgs, offset, time_window, exclude_junk, save, filesave):
     for x in dorksFile:
+        x = x.strip()
         x = x.replace("[DOMAIN]", domain)
-        dg1 = dg(getDork(x), pgs, offset, time_window, exclude_junk)
+        data = json.loads(x)
+        dg1 = dg(data['query'], pgs, offset, time_window, exclude_junk)
         search_results = dg1.run()
-        checkResults(search_results, getTitle(x), getLevel(x), save, filesave)
+        checkResults(search_results, data['name'], data['severity'], save, filesave)
 
 def outputSave(text, file):
     arq = open(file, 'a+')
